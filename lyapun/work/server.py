@@ -19,9 +19,11 @@ class Server():
             signal.SIGINT, self._kill_signal_handler
         )
         self.threads = []
-        self._initialize_socket(host, port)
+        self.host = host
+        self.port = port
 
     def run_server(self):
+        self._initialize_socket(self.host, self.port)
         while not self.do_stop:
             try:
                 conn, addr = self.sock.accept()
