@@ -38,7 +38,7 @@ class Server():
 
     def stop_server(self):
         self.do_stop = True
-        for thread in self.threads:
+        for thread in self.threads[:]:
             logging.info(
                 "thread=%s, thread.is_alive=%s", thread, thread.is_alive()
             )
