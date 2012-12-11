@@ -6,7 +6,8 @@ import threading
 import logging
 
 from work.general import recieve_data_from_socket
-from work.utils import parse_recieved_bytes, prepare_data_for_sending
+from work.utils import prepare_data_for_sending
+from work import protocol
 
 
 class Server():
@@ -72,33 +73,20 @@ class Server():
         while not self.do_stop:
             try:
                 recieved_bytes = recieve_data_from_socket(conn)
-                command, data = parse_recieved_bytes(recieved_bytes)
-                logging.info("Command=%s, data=%s", command, data)
+                command = protocol.Packet.unpack(recieved_bytes)
+                self._send_data_to_socket(conn, command.reply())
+                if type(command) in [protocol.Quit, protocol.QuitD]:
+                    conn.close()
+                    break
+                elif type(command) == protocol.Finish:
+                    conn.close()
+                    self.do_stop = True
+                    break
             except socket.timeout:
                 continue
             except OSError as msg:
                 logging.error("OSError: %s", msg)
                 self.stop_server()
-            if command == 'connect':
-                self._send_data_to_socket(conn, 'connected')
-            elif command == 'ping':
-                self._send_data_to_socket(conn, 'pong')
-            elif command == 'pingd':
-                self._send_data_to_socket(conn, 'pongd ' + data)
-            elif command == 'quit':
-                if data:
-                    self._send_data_to_socket(conn, 'ackquit ' + data)
-                else:
-                    self._send_data_to_socket(conn, 'ackquit')
-                conn.close()
-                break
-            elif command == 'finish':
-                self._send_data_to_socket(conn, 'ackfinish')
-                conn.close()
-                self.do_stop = True
-                break
-            elif command:
-                self._send_data_to_socket(conn, 'invalid command')
         else:
             self._send_data_to_socket(conn, 'ackfinish')
             conn.close()
