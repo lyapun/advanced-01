@@ -18,12 +18,21 @@ class ProtocolMeta(type):
         if dct.get('__abstract__'):
             return
         self.fields = OrderedDict()
-        for attr, value in dct.items():
-            if isinstance(value, Field):
-                value.name = attr
-                self.fields[attr] = value
+        command_exists = False
+        for key, value in dct.items():
             if isinstance(value, Command):
+                assert value.command not in self.__class__.registered_packets, (
+                    "Duplicate command!"
+                )
                 self.__class__.registered_packets[value.command] = self
+                command_exists = True
+            if isinstance(value, Field):
+                value.name = key
+                self.fields[key] = value
+        assert command_exists, "Command should exists!"
+        assert isinstance(list(self.fields.values())[0], Command), (
+            "Command should be first argument"
+        )
 
     @classmethod
     def __prepare__(cls, name, bases):
@@ -58,8 +67,8 @@ class Packet(metaclass=ProtocolMeta):
 
     def __init__(self, **kwargs):
         keys = list(self.fields.keys())
-        cmd = self.fields[keys[0]].command
-        setattr(self, keys[0], cmd)
+        command = self.fields[keys[0]].command
+        setattr(self, keys[0], command)
         for attr in keys[1:]:
             value = kwargs.get(attr)
             setattr(self, attr, value)

@@ -5,4 +5,4 @@ client:
 	python client01.py --host=localhost
 
 test:
-	nosetests tests/
+	nosetests -x -s tests/

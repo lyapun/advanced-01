@@ -15,6 +15,22 @@ class ProtocolTestCase(TestCase):
             protocol.PingD in protocol.ProtocolMeta.registered_packets.values()
         )
 
+    def test_register_packet_with_duplicate_command(self):
+        with self.assertRaises(AssertionError):
+            class DuplicatePing(protocol.Packet):
+                command = protocol.Command(protocol.PING)
+
+    def test_packet_without_command(self):
+        with self.assertRaises(AssertionError):
+            class NoCommand(protocol.Packet):
+                data = protocol.String()
+
+    def test_packet_with_bad_arg_order(self):
+        with self.assertRaises(AssertionError):
+            class BadOrder(protocol.Packet):
+                data = protocol.String()
+                command = protocol.Command(protocol.PING)
+
 
 class ConnectTestCase(TestCase):
 
