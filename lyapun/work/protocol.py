@@ -69,7 +69,7 @@ class Packet(metaclass=ProtocolMeta):
         for attr, value in self.fields.items():
             bytes += str(getattr(self, attr)).encode('utf-8')
         bytes_length = len(bytes)
-        return bytes_length.to_bytes(2, byteorder='big') + bytes
+        return bytes_length.to_bytes(4, byteorder='big') + bytes
 
     @classmethod
     def unpack(cls, data):

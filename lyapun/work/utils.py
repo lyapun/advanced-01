@@ -5,7 +5,7 @@ def prepare_data_for_sending(data):
     data = data.replace(' ', '\n')
     bytes = data.encode('utf-8')
     bytes_length = len(bytes)
-    return bytes_length.to_bytes(2, byteorder='big') + bytes
+    return bytes_length.to_bytes(4, byteorder='big') + bytes
 
 
 def parse_recieved_bytes(bytes):

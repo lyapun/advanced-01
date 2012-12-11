@@ -9,10 +9,10 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_prepare_data_for_sending(self):
         self.assertEqual(
-            b'\x00\x05HELLO', prepare_data_for_sending("HELLO")
+            b'\x00\x00\x00\x05HELLO', prepare_data_for_sending("HELLO")
         )
         self.assertEqual(
-            b'\x00\x0eHELLO\nWORLD!!!',
+            b'\x00\x00\x00\x0eHELLO\nWORLD!!!',
             prepare_data_for_sending("HELLO WORLD!!!")
         )
 

@@ -27,7 +27,7 @@ class ConnectTestCase(TestCase):
 
     def test_pack(self):
         packet = protocol.Connect()
-        self.assertEqual(b'\x00\x010', packet.pack())
+        self.assertEqual(b'\x00\x00\x00\x010', packet.pack())
 
     def test_unpack(self):
         packet = protocol.Packet.unpack(b'0')
@@ -46,7 +46,7 @@ class PingTestCase(TestCase):
 
     def test_pack(self):
         ping = protocol.Ping()
-        self.assertEqual(b'\x00\x011', ping.pack())
+        self.assertEqual(b'\x00\x00\x00\x011', ping.pack())
 
     def test_unpack(self):
         packet = protocol.Packet.unpack(b'1')
@@ -63,7 +63,7 @@ class PingDTestCase(TestCase):
 
     def test_pack(self):
         pingd = protocol.PingD(data='hello world')
-        self.assertEqual(b'\x00\x0C2hello world', pingd.pack())
+        self.assertEqual(b'\x00\x00\x00\x0C2hello world', pingd.pack())
 
     def test_unpack(self):
         packet = protocol.Packet.unpack(b'2hello world')
@@ -83,7 +83,7 @@ class QuitTestCase(TestCase):
 
     def test_pack(self):
         packet = protocol.Quit()
-        self.assertEqual(b'\x00\x013', packet.pack())
+        self.assertEqual(b'\x00\x00\x00\x013', packet.pack())
 
     def test_unpack(self):
         packet = protocol.Packet.unpack(b'3')
@@ -100,7 +100,7 @@ class QuitDTestCase(TestCase):
 
     def test_pack(self):
         packet = protocol.QuitD(data='hello world')
-        self.assertEqual(b'\x00\x0C4hello world', packet.pack())
+        self.assertEqual(b'\x00\x00\x00\x0C4hello world', packet.pack())
 
     def test_unpack(self):
         packet = protocol.Packet.unpack(b'4hello world')
@@ -120,7 +120,7 @@ class FinishTestCase(TestCase):
 
     def test_pack(self):
         packet = protocol.Finish()
-        self.assertEqual(b'\x00\x015', packet.pack())
+        self.assertEqual(b'\x00\x00\x00\x015', packet.pack())
 
     def test_unpack(self):
         packet = protocol.Packet.unpack(b'5')
