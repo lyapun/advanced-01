@@ -150,7 +150,7 @@ class Feeder:
             if len(buffer) >= 4:
                 buffer = self._store_data_length(buffer)
         if self.data_length and len(buffer) >= self.data_length:
-            return self._get_packet_and_buffer(buffer)
+            return self._get_command_and_buffer(buffer)
         else:
             return None, buffer
 
@@ -164,6 +164,7 @@ class Feeder:
 
     def _get_packet_and_buffer(self, buffer):
         packet = buffer[:self.data_length]
+        command = Packet.unpack(packet)
         buffer = buffer[self.data_length:]
         self.data_length = None
-        return packet, buffer
+        return command, buffer

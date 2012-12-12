@@ -74,11 +74,10 @@ class Server():
         feeder = protocol.Feeder(conn)
         while not self.do_stop:
             try:
-                packet = None
-                while packet is None and not self.do_stop:
-                    packet, buffer = feeder.feed(buffer)
-                if packet:
-                    command = protocol.Packet.unpack(packet)
+                command = None
+                while command is None and not self.do_stop:
+                    command, buffer = feeder.feed(buffer)
+                if command:
                     self._send_data_to_socket(conn, command.reply())
                     if type(command) in [protocol.Quit, protocol.QuitD]:
                         conn.close()
