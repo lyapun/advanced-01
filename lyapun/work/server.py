@@ -70,18 +70,23 @@ class Server():
 
     def _socket_handler(self, conn, addr):
         conn.settimeout(1.0)
+        buffer = b''
+        feeder = protocol.Feeder(conn)
         while not self.do_stop:
             try:
-                recieved_bytes = recieve_data_from_socket(conn)
-                command = protocol.Packet.unpack(recieved_bytes)
-                self._send_data_to_socket(conn, command.reply())
-                if type(command) in [protocol.Quit, protocol.QuitD]:
-                    conn.close()
-                    break
-                elif type(command) == protocol.Finish:
-                    conn.close()
-                    self.do_stop = True
-                    break
+                packet = None
+                while packet is None and not self.do_stop:
+                    packet, buffer = feeder.feed(buffer)
+                if packet:
+                    command = protocol.Packet.unpack(packet)
+                    self._send_data_to_socket(conn, command.reply())
+                    if type(command) in [protocol.Quit, protocol.QuitD]:
+                        conn.close()
+                        break
+                    elif type(command) == protocol.Finish:
+                        conn.close()
+                        self.do_stop = True
+                        break
             except socket.timeout:
                 continue
             except OSError as msg:
