@@ -162,7 +162,7 @@ class Feeder:
         )
         return buffer
 
-    def _get_packet_and_buffer(self, buffer):
+    def _get_command_and_buffer(self, buffer):
         packet = buffer[:self.data_length]
         command = Packet.unpack(packet)
         buffer = buffer[self.data_length:]

@@ -7,7 +7,7 @@ import logging
 
 from work.general import recieve_data_from_socket
 from work.utils import prepare_data_for_sending
-from work import protocol
+from work.protocol import Feeder, Finish, Quit, QuitD
 
 
 class Server():
@@ -71,7 +71,7 @@ class Server():
     def _socket_handler(self, conn, addr):
         conn.settimeout(1.0)
         buffer = b''
-        feeder = protocol.Feeder(conn)
+        feeder = Feeder(conn)
         while not self.do_stop:
             try:
                 command = None
@@ -79,10 +79,10 @@ class Server():
                     command, buffer = feeder.feed(buffer)
                 if command:
                     self._send_data_to_socket(conn, command.reply())
-                    if type(command) in [protocol.Quit, protocol.QuitD]:
+                    if type(command) in [Quit, QuitD]:
                         conn.close()
                         break
-                    elif type(command) == protocol.Finish:
+                    elif type(command) == Finish:
                         conn.close()
                         self.do_stop = True
                         break
