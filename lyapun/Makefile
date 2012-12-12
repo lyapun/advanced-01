@@ -2,7 +2,7 @@ server:
 	python server01.py --withlog
 
 client:
-	python client01.py --host=localhost
+	python client.py --host=localhost
 
 test:
 	nosetests -x -s tests/

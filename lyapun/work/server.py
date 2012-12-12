@@ -78,6 +78,7 @@ class Server():
                 while command is None and not self.do_stop:
                     command, buffer = feeder.feed(buffer)
                 if command:
+                    logging.info("Command = %s", command)
                     self._send_data_to_socket(conn, command.reply())
                     if type(command) in [Quit, QuitD]:
                         conn.close()
