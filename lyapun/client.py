@@ -3,7 +3,8 @@
 import socket
 
 from work.cmdargs import parse_arguments
-from work import protocol
+from work.protocol.commands import Connect
+from work.protocol.utils import is_command_with_data, construct_command_from_id
 
 
 class Client:
@@ -23,7 +24,7 @@ class Client:
         self.sock.close()
 
     def send_connect(self):
-        connect = protocol.Connect()
+        connect = Connect()
         self.sock.sendall(connect.pack())
         self.sock.recv(1024)
 
@@ -46,10 +47,10 @@ class Client:
         while True:
             command_id = int(input('> '))
             data = ''
-            if protocol.is_command_with_data(command_id):
+            if is_command_with_data(command_id):
                 print("Enter data!")
                 data = input('> ')
-            command = protocol.construct_command_from_id(command_id, data)
+            command = construct_command_from_id(command_id, data)
             self.sock.sendall(command.pack())
             received_data = self.sock.recv(1024)
             print ("Recieved: ", received_data.decode('utf-8'))
