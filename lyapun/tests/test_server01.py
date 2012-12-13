@@ -9,7 +9,7 @@ from time import sleep
 
 from work.utils import prepare_data_for_sending, parse_recieved_bytes
 from work.general import recieve_data_from_socket
-from work import protocol
+from work.protocol.commands import Connect, Ping, PingD, Quit, QuitD, Finish
 
 logging.disable(logging.CRITICAL)
 
@@ -39,32 +39,32 @@ class ServerTestCase(TestCase):
         return data
 
     def test_connect(self):
-        command = protocol.Connect()
+        command = Connect()
         data = self._send_command(command.pack())
         self.assertEqual(b'connected', data)
 
     def test_ping(self):
-        command = protocol.Ping()
+        command = Ping()
         data = self._send_command(command.pack())
         self.assertEqual(b'pong', data)
 
     def test_pingd(self):
-        command = protocol.PingD(data='hello world')
+        command = PingD(data='hello world')
         data = self._send_command(command.pack())
         self.assertEqual(b'pongd\nhello\nworld', data)
 
     def test_quit(self):
-        command = protocol.Quit()
+        command = Quit()
         data = self._send_command(command.pack())
         self.assertEqual(b'ackquit', data)
 
     def test_quitd(self):
-        command = protocol.QuitD(data='hello world')
+        command = QuitD(data='hello world')
         data = self._send_command(command.pack())
         self.assertEqual(b'ackquitd\nhello\nworld', data)
 
     def test_finish(self):
-        command = protocol.Finish()
+        command = Finish()
         data = self._send_command(command.pack())
         self.assertEqual(b'ackfinish', data)
         self.server.wait()

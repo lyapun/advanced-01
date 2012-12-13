@@ -5,9 +5,9 @@ import socket
 import threading
 import logging
 
-from work.general import recieve_data_from_socket
 from work.utils import prepare_data_for_sending
-from work.protocol import Feeder, Finish, Quit, QuitD
+from work.protocol import Feeder
+from work.protocol.commands import Finish, Quit, QuitD
 
 
 class Server():
