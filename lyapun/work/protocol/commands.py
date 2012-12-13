@@ -9,6 +9,12 @@ PINGD = 2
 QUIT = 3
 QUITD = 4
 FINISH = 5
+CONNECTED = 6
+PONG = 7
+PONGD = 8
+ACKQUIT = 9
+ACKQUITD = 10
+ACKFINISH = 11
 
 
 class Packet(metaclass=ProtocolMeta):
@@ -48,14 +54,14 @@ class Connect(Packet):
     command = Command(CONNECT)
 
     def reply(self):
-        return 'connected'
+        return Connected().pack()
 
 
 class Ping(Packet):
     command = Command(PING)
 
     def reply(self):
-        return 'pong'
+        return Pong().pack()
 
 
 class PingD(Packet):
@@ -63,14 +69,14 @@ class PingD(Packet):
     data = String()
 
     def reply(self):
-        return 'pongd ' + self.data
+        return PongD(data=self.data).pack()
 
 
 class Quit(Packet):
     command = Command(QUIT)
 
     def reply(self):
-        return 'ackquit'
+        return AckQuit().pack()
 
 
 class QuitD(Packet):
@@ -78,11 +84,37 @@ class QuitD(Packet):
     data = String()
 
     def reply(self):
-        return 'ackquitd ' + self.data
+        return AckQuitD(data=self.data).pack()
 
 
 class Finish(Packet):
     command = Command(FINISH)
 
     def reply(self):
-        return 'ackfinish'
+        return AckFinish().pack()
+
+
+class Connected(Packet):
+    command = Command(CONNECTED)
+
+
+class Pong(Packet):
+    command = Command(PONG)
+
+
+class PongD(Packet):
+    command = Command(PONGD)
+    data = String()
+
+
+class AckQuit(Packet):
+    command = Command(ACKQUIT)
+
+
+class AckQuitD(Packet):
+    command = Command(ACKQUITD)
+    data = String()
+
+
+class AckFinish(Packet):
+    command = Command(ACKFINISH)

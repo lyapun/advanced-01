@@ -9,7 +9,9 @@ from time import sleep
 
 from work.utils import prepare_data_for_sending, parse_recieved_bytes
 from work.general import recieve_data_from_socket
-from work.protocol.commands import Connect, Ping, PingD, Quit, QuitD, Finish
+from work.protocol.commands import (Connect, Ping, PingD, Quit, QuitD, Finish,
+                                    Connected, Pong, PongD, AckQuit, AckQuitD,
+                                    AckFinish)
 
 logging.disable(logging.CRITICAL)
 
@@ -34,38 +36,40 @@ class ServerTestCase(TestCase):
         sock.connect((HOST, PORT))
         sock.settimeout(1.0)
         sock.sendall(command)
-        data = recieve_data_from_socket(sock)
+        data = sock.recv(1024)
         sock.close()
         return data
 
     def test_connect(self):
         command = Connect()
-        data = self._send_command(command.pack())
-        self.assertEqual(b'connected', data)
+        response = self._send_command(command.pack())
+        self.assertEqual(Connected().pack(), response)
 
     def test_ping(self):
         command = Ping()
-        data = self._send_command(command.pack())
-        self.assertEqual(b'pong', data)
+        response = self._send_command(command.pack())
+        self.assertEqual(Pong().pack(), response)
 
     def test_pingd(self):
-        command = PingD(data='hello world')
-        data = self._send_command(command.pack())
-        self.assertEqual(b'pongd\nhello\nworld', data)
+        data = 'hello world'
+        command = PingD(data=data)
+        response = self._send_command(command.pack())
+        self.assertEqual(PongD(data=data).pack(), response)
 
     def test_quit(self):
         command = Quit()
-        data = self._send_command(command.pack())
-        self.assertEqual(b'ackquit', data)
+        response = self._send_command(command.pack())
+        self.assertEqual(AckQuit().pack(), response)
 
     def test_quitd(self):
-        command = QuitD(data='hello world')
-        data = self._send_command(command.pack())
-        self.assertEqual(b'ackquitd\nhello\nworld', data)
+        data = 'hello world'
+        command = QuitD(data=data)
+        response = self._send_command(command.pack())
+        self.assertEqual(AckQuitD(data=data).pack(), response)
 
     def test_finish(self):
         command = Finish()
-        data = self._send_command(command.pack())
-        self.assertEqual(b'ackfinish', data)
+        response = self._send_command(command.pack())
+        self.assertEqual(AckFinish().pack(), response)
         self.server.wait()
         self.assertEqual(0, self.server.poll())

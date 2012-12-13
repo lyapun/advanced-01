@@ -7,7 +7,7 @@ import logging
 
 from work.utils import prepare_data_for_sending
 from work.protocol import Feeder
-from work.protocol.commands import Finish, Quit, QuitD
+from work.protocol.commands import AckFinish, Finish, Quit, QuitD
 
 
 class Server():
@@ -93,7 +93,7 @@ class Server():
                 logging.error("OSError: %s", msg)
                 self.stop_server()
         else:
-            self._send_data_to_socket(conn, 'ackfinish')
+            self._send_data_to_socket(conn, AckFinish().pack())
             conn.close()
 
         self.threads.remove(threading.currentThread())
@@ -101,7 +101,7 @@ class Server():
 
     def _send_data_to_socket(self, conn, data):
         try:
-            conn.sendall(prepare_data_for_sending(data))
+            conn.sendall(data)
         except OSError as msg:
             logging.error("OSError: %s", msg)
             self.stop_server()
