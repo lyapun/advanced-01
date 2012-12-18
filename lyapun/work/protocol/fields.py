@@ -3,6 +3,8 @@
 
 class Field:
     def __get__(self, instance, owner):
+        if instance is None:
+            return self
         return instance.__dict__[self.name]
 
     def __set__(self, instance, value):
